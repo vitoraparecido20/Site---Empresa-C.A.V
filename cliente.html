@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clientes</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    background: #0f172a;
+    color: #fff;
+}
+
+/* MENU LATERAL */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #020617;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+}
+
+.menu a {
+    display: block;
+    padding: 12px;
+    color: #94a3b8;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.menu a:hover, .menu .active {
+    background: #1e293b;
+    color: #fff;
+}
+
+/* CONTEÚDO */
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-secondary {
+    background: #334155;
+    color: white;
+}
+
+/* TABELA */
+.table-container {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    color: #cbd5f5;
+}
+
+tr {
+    border-bottom: 1px solid #334155;
+}
+
+/* MODAL */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+.modal input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- MENU -->
+<div class="sidebar">
+    <h2>🏢 Bem Vindo</h2>
+    <div class="menu">
+        <a href="#">📊 C.A.V</a>
+        <a href="#">👥 Funcionários</a>
+        <a href="#" class="active">🏢 Clientes</a>
+        <a href="#">💰 Recebíveis</a>
+        <a href="#">📄 Vales</a>
+    </div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="content">
+    <div class="header">
+        <h1>🏢 Clientes</h1>
+        <div>
+            <button class="btn btn-secondary" onclick="exportCSV()">CSV</button>
+            <button class="btn btn-primary" onclick="abrirModal()">+ Cadastrar</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CNPJ/CPF</th>
+                    <th>Endereço</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaClientes"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3>Cadastrar Cliente</h3>
+        <input type="text" id="nome" placeholder="Nome">
+        <input type="text" id="cpf" placeholder="CPF/CNPJ">
+        <input type="text" id="endereco" placeholder="Endereço">
+        <input type="text" id="telefone" placeholder="Telefone">
+        <input type="email" id="email" placeholder="Email">
+
+        <button class="btn btn-primary" onclick="salvarCliente()">Salvar</button>
+        <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+    </div>
+</div>
+
+<script>
+let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+
+function salvarLocal() {
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+}
+
+function renderizar() {
+    let tabela = document.getElementById("tabelaClientes");
+    tabela.innerHTML = "";
+
+    clientes.forEach((c, index) => {
+        tabela.innerHTML += `
+            <tr>
+                <td>${c.nome}</td>
+                <td>${c.cpf}</td>
+                <td>${c.endereco}</td>
+                <td>${c.telefone}</td>
+                <td>${c.email}</td>
+                <td>
+                    <button onclick="remover(${index})">❌</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function salvarCliente() {
+    let cliente = {
+        nome: document.getElementById("nome").value,
+        cpf: document.getElementById("cpf").value,
+        endereco: document.getElementById("endereco").value,
+        telefone: document.getElementById("telefone").value,
+        email: document.getElementById("email").value
+    };
+
+    clientes.push(cliente);
+    salvarLocal();
+    renderizar();
+    fecharModal();
+}
+
+function remover(index) {
+    clientes.splice(index, 1);
+    salvarLocal();
+    renderizar();
+}
+
+function abrirModal() {
+    document.getElementById("modal").style.display = "flex";
+}
+
+function fecharModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+/* EXPORTAR CSV */
+function exportCSV() {
+    let csv = "Nome,CNPJ/CPF,Endereço,Telefone,Email\n";
+
+    clientes.forEach(c => {
+        csv += ${c.nome},${c.cpf},${c.endereco},${c.telefone},${c.email}\n;
+    });
+
+    let blob = new Blob([csv], { type: 'text/csv' });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "clientes.csv";
+    link.click();
+}
+
+renderizar();
+</script>
+
+</body>
+</html>
