@@ -4,246 +4,174 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestão - C.A.V</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* ESTILOS GERAIS */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        :root {
+            --sidebar-bg: #0b1120;
+            --main-bg: #0f172a;
+            --accent-blue: #2563eb;
+            --text-muted: #94a3b8;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        body { 
-            display: flex; 
-            min-height: 100vh; 
-            background: #0f172a; 
-            color: white;
-            overflow: hidden;
-        }
+        body { display: flex; min-height: 100vh; background-color: var(--main-bg); color: white; overflow: hidden; }
 
-        /* BARRA LATERAL */
-        .sidebar { 
-            width: 260px; 
-            background: #1e293b; 
-            padding: 24px; 
-            display: flex; 
-            flex-direction: column;
-            border-right: 1px solid #334155;
-            z-index: 10;
-        }
-
-        .sidebar h2 { font-size: 1.2rem; margin-bottom: 30px; color: #f8fafc; }
-
+        /* SIDEBAR */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #1e293b; z-index: 10; }
+        .sidebar-header { padding: 20px; font-size: 1.25rem; font-weight: bold; border-bottom: 1px solid #1e293b; display: flex; align-items: center; gap: 10px; }
+        .menu-label { padding: 20px 20px 10px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
         .sidebar ul { list-style: none; }
-        .sidebar li { 
-            padding: 12px 16px; 
-            cursor: pointer; 
-            border-radius: 8px; 
-            margin-bottom: 8px; 
-            transition: 0.3s;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .sidebar li { padding: 12px 20px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 0.9rem; }
+        .sidebar li:hover { background: #1e293b; color: white; }
+        .sidebar li.active { background: #1e293b; color: white; border-left: 4px solid var(--accent-blue); }
+        .sidebar i { width: 20px; text-align: center; }
 
-        .sidebar li:hover { background: #334155; color: white; }
-        .sidebar li.active { background: #2563eb; color: white; }
-
-        /* CONTEÚDO PRINCIPAL */
-        .main-content { 
-            flex: 1; 
-            position: relative; 
-            overflow-y: auto;
-            background: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        .overlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(15, 23, 42, 0.85); z-index: 1; 
-        }
-
-        .page-container { 
-            position: relative; z-index: 2; padding: 40px; 
-            max-width: 1200px; margin: auto; 
-        }
-
-        h1 { margin-bottom: 25px; font-size: 1.8rem; }
-
-        /* CARDS */
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        /* MAIN CONTENT AREA */
+        .main-wrapper { flex: 1; position: relative; display: flex; flex-direction: column; overflow-y: auto; }
         
-        .card { 
-            background: white; color: #1e293b; padding: 20px; 
-            border-radius: 12px; border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        /* BACKGROUND IMAGE WITH OVERLAY */
+        .bg-overlay {
+            position: fixed; top: 0; left: 260px; right: 0; bottom: 0;
+            background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover; background-position: center; z-index: 1;
         }
-        .card p { color: #64748b; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
-        .card h3 { font-size: 1.6rem; margin-top: 8px; font-weight: 700; }
+        .bg-darken { position: fixed; top: 0; left: 260px; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); z-index: 2; }
 
-        /* TABELAS */
-        .table-container { 
-            background: white; border-radius: 12px; 
-            overflow: hidden; color: #1e293b; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
+        .content-container { position: relative; z-index: 3; padding: 30px; max-width: 1200px; width: 100%; margin: 0 auto; }
+
+        /* DASHBOARD CARDS */
+        .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 25px; font-size: 0.9rem; }
+        .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
+        .card { background: var(--card-bg); color: #1e293b; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .card .label { color: #64748b; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        .card .value { font-size: 1.75rem; font-weight: 700; }
+
+        /* TABLES */
+        .section-title { font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: #fbbf24; }
+        .table-wrapper { background: var(--card-bg); border-radius: 12px; overflow: hidden; color: #1e293b; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 16px; text-align: left; color: #64748b; font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 16px; border-top: 1px solid #f1f5f9; font-size: 0.9rem; }
-        tr:hover { background-color: #f8fafc; }
-
-        .status-badge {
-            padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
-            background: #e2e8f0; color: #475569;
-        }
-
+        th { background: #f8fafc; padding: 12px 15px; text-align: left; font-size: 0.75rem; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+        
+        .btn-action { background: var(--accent-blue); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
         .hidden { display: none; }
-
-        .header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-add { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar">
-        <h2>🏢 Bem Vindo</h2>
-        <ul id="menu">
-            <li class="active" onclick="showPage('dashboard', this)">📊 C.A.V</li>
-            <li onclick="showPage('funcionarios', this)">👥 Funcionários</li>
-            <li onclick="showPage('clientes', this)">🤝 Clientes</li>
-            <li onclick="showPage('recebiveis', this)">💰 Recebíveis</li>
-            <li onclick="showPage('vales', this)">💳 Vales</li>
-            <li onclick="showPage('folha', this)">📄 Folha de Pagamento</li>
-            <li onclick="showPage('relatorios', this)">📜 Relatório</li>
+        <div class="sidebar-header"><i class="fa-solid fa-building"></i> Bem Vindo</div>
+        <div class="menu-label">Menu Principal</div>
+        <ul id="main-menu">
+            <li class="active" onclick="navigate('dashboard', this)"><i class="fa-solid fa-chart-line"></i> C.A.V</li>
+            <li onclick="navigate('funcionarios', this)"><i class="fa-solid fa-users"></i> Funcionários</li>
+            <li onclick="navigate('clientes', this)"><i class="fa-solid fa-handshake"></i> Clientes</li>
+            <li onclick="navigate('recebiveis', this)"><i class="fa-solid fa-money-bill-trend-up"></i> Recebíveis</li>
+            <li onclick="navigate('vales', this)"><i class="fa-solid fa-credit-card"></i> Vales</li>
+            <li onclick="navigate('folha', this)"><i class="fa-solid fa-file-invoice-dollar"></i> Folha de Pagamento</li>
+            <li onclick="navigate('relatorios', this)"><i class="fa-solid fa-file-lines"></i> Relatórios</li>
         </ul>
     </aside>
 
-    <main class="main-content">
-        <div class="overlay"></div>
+    <div class="main-wrapper">
+        <div class="bg-overlay"></div>
+        <div class="bg-darken"></div>
         
-        <div class="page-container">
-            
+        <div class="content-container">
+            <div class="top-bar"><i class="fa-regular fa-window-maximize"></i> Sistema de Gestão Empresarial</div>
+
             <section id="dashboard">
-                <h1>Sistema de Gestão Empresarial</h1>
                 <div class="cards-grid">
-                    <div class="card"><p>Total a Receber</p><h3>R$ 10.000,00</h3></div>
-                    <div class="card"><p>Folha Líquida Est.</p><h3>R$ 720,00</h3></div>
-                    <div class="card"><p>Funcionários Ativos</p><h3>1</h3></div>
-                    <div class="card"><p>Vales Pendentes</p><h3>R$ 0,00</h3></div>
+                    <div class="card"><div class="label"><i class="fa-solid fa-money-bill" style="color: #f59e0b;"></i> Total a Receber</div><div class="value">R$ 10.000,00</div></div>
+                    <div class="card"><div class="label"><i class="fa-solid fa-file-invoice" style="color: #3b82f6;"></i> Folha Líquida Est.</div><div class="value">R$ 720,00</div></div>
+                    <div class="card"><div class="label"><i class="fa-solid fa-user-group" style="color: #3b82f6;"></i> Funcionários Ativos</div><div class="value">1</div></div>
+                    <div class="card"><div class="label"><i class="fa-solid fa-credit-card" style="color: #f59e0b;"></i> Vales Pendentes</div><div class="value">R$ 0,00</div></div>
                 </div>
-                <h2 style="margin: 20px 0; font-size: 1.2rem;">⚠️ Recebíveis Próximos do Vencimento</h2>
-                <div class="table-container">
+                <div class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> Recebíveis Próximos do Vencimento</div>
+                <div class="table-wrapper">
                     <table>
                         <thead><tr><th>Cliente</th><th>Descrição</th><th>Valor</th><th>Vencimento</th></tr></thead>
-                        <tbody>
-                            <tr><td>Cav Apoio Ltda</td><td>Reserva de Vaga</td><td>R$ 10.000,00</td><td>03/04/2026</td></tr>
-                        </tbody>
+                        <tbody><tr><td>Cav apoio Ltda</td><td>Reserva de vaga</td><td>R$ 10.000,00</td><td>03/04/2026</td></tr></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="funcionarios" class="hidden">
-                <div class="header-action">
-                    <h1>👥 Funcionários</h1>
-                    <button class="btn-add">+ Cadastrar</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2><i class="fa-solid fa-users"></i> Funcionários</h2>
+                    <button class="btn-action"><i class="fa-solid fa-plus"></i> Cadastrar</button>
                 </div>
-                <div class="table-container">
+                <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Nome</th><th>CPF</th><th>RG</th><th>Valor Hora</th></tr></thead>
-                        <tbody>
-                            <tr><td>Vania de Araujo</td><td>300.049.528-20</td><td>32.380.502-4</td><td>R$ 30,00</td></tr>
-                        </tbody>
+                        <thead><tr><th>Nome</th><th>CPF</th><th>RG</th><th>Pix</th><th>Valor Hora</th><th>Horas</th></tr></thead>
+                        <tbody><tr><td>Vania de Araujo</td><td>300.049.528-20</td><td>32.380.502-4</td><td>30004952820</td><td>R$ 30,00</td><td>24</td></tr></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="clientes" class="hidden">
-                <div class="header-action">
-                    <h1>🤝 Clientes</h1>
-                    <button class="btn-add">+ Novo Cliente</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2><i class="fa-solid fa-handshake"></i> Clientes</h2>
+                    <button class="btn-action"><i class="fa-solid fa-plus"></i> Cadastrar</button>
                 </div>
-                <div class="table-container">
+                <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Nome</th><th>CPF/CNPJ</th><th>Telefone</th><th>Status</th></tr></thead>
-                        <tbody>
-                            <tr><td>Cav Apoio Ltda</td><td>12.345.678/0001-90</td><td>(11) 9999-9999</td><td><span class="status-badge">Ativo</span></td></tr>
-                        </tbody>
+                        <thead><tr><th>Nome</th><th>CNPJ/CPF</th><th>Endereço</th><th>Telefone</th><th>E-mail</th></tr></thead>
+                        <tbody><tr><td>Cav apoio Ltda</td><td>06.771.213/0001-01</td><td>Rua Ferraz de campos, 187</td><td>11 995713886</td><td>financeiro@gmail.com</td></tr></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="recebiveis" class="hidden">
-                <h1>💰 Recebíveis</h1>
-                <div class="table-container">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h2><i class="fa-solid fa-money-bill-trend-up"></i> Recebíveis</h2>
+                    <button class="btn-action"><i class="fa-solid fa-plus"></i> Registrar</button>
+                </div>
+                <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Cliente</th><th>Valor</th><th>Emissão</th><th>Vencimento</th><th>Status</th></tr></thead>
-                        <tbody>
-                            <tr><td>Cav Apoio Ltda</td><td>R$ 10.000,00</td><td>03/03/2026</td><td>03/04/2026</td><td><span class="status-badge">Pendente</span></td></tr>
-                        </tbody>
+                        <thead><tr><th>Cliente</th><th>Descrição</th><th>Valor</th><th>Emissão</th><th>Vencimento</th><th>Status</th></tr></thead>
+                        <tbody><tr><td>Cav apoio Ltda</td><td>Reserva de vaga</td><td>R$ 10.000,00</td><td>19/03/2026</td><td>03/04/2026</td><td>Pendente</td></tr></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="vales" class="hidden">
-                <h1>💳 Vales e Adiantamentos</h1>
-                <div class="table-container">
+                <h2><i class="fa-solid fa-credit-card"></i> Vales / Adiantamentos</h2>
+                <div class="table-wrapper" style="margin-top:20px;">
                     <table>
-                        <thead><tr><th>Funcionário</th><th>Data</th><th>Valor</th><th>Motivo</th></tr></thead>
-                        <tbody>
-                            <tr><td colspan="4" style="text-align: center; color: #94a3b8;">Nenhum vale registrado este mês.</td></tr>
-                        </tbody>
+                        <thead><tr><th>Funcionário</th><th>Data</th><th>Valor</th><th>Motivo</th><th>Situação</th></tr></thead>
+                        <tbody><tr><td>Vania de Araujo</td><td>19/03/2026</td><td>R$ 500,00</td><td>Adiantamento</td><td style="color:red">Descontado</td></tr></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="folha" class="hidden">
-                <h1>📄 Folha de Pagamento</h1>
-                <div class="table-container">
+                <h2><i class="fa-solid fa-file-invoice-dollar"></i> Folha de Pagamento</h2>
+                <div class="table-wrapper" style="margin-top:20px;">
                     <table>
-                        <thead><tr><th>Funcionário</th><th>Salário Bruto</th><th>Descontos (Vales)</th><th>Salário Líquido</th></tr></thead>
-                        <tbody>
-                            <tr><td>Vania de Araujo</td><td>R$ 720,00</td><td>R$ 0,00</td><td><strong>R$ 720,00</strong></td></tr>
-                        </tbody>
+                        <thead><tr><th>Funcionário</th><th>Salário Bruto</th><th>Vales a Descontar</th><th>Salário Líquido</th></tr></thead>
+                        <tbody><tr><td>Vania de Araujo</td><td>R$ 720,00</td><td>R$ 500,00</td><td><strong>R$ 220,00</strong></td></tr></tbody>
                     </table>
                 </div>
             </section>
 
             <section id="relatorios" class="hidden">
-                <h1>📜 Relatórios Gerais</h1>
-                <div class="card" style="margin-bottom: 20px;">
-                    <p>Resumo Mensal</p>
-                    <h3 style="color: #22c55e;">Saldo Positivo: R$ 9.280,00</h3>
-                </div>
-                <div class="table-container">
-                    <p style="padding: 20px; color: #64748b;">Gere relatórios em PDF ou CSV selecionando os filtros acima (Em breve).</p>
+                <h2><i class="fa-solid fa-file-lines"></i> Relatórios</h2>
+                <div class="table-wrapper" style="margin-top:20px; padding:20px;">
+                    <p style="color:#64748b">Selecione um tipo de relatório para gerar os dados consolidados.</p>
                 </div>
             </section>
-
         </div>
-    </main>
+    </div>
 
     <script>
-        /**
-         * Função para trocar de página
-         * @param {string} pageId - O ID da section que deve aparecer
-         * @param {HTMLElement} element - O item da lista que foi clicado
-         */
-        function showPage(pageId, element) {
-            // 1. Esconder todas as seções (sections)
-            const sections = document.querySelectorAll('section');
-            sections.forEach(sec => {
-                sec.classList.add('hidden');
-            });
-
-            // 2. Remover a classe 'active' de todos os itens do menu
-            const menuItems = document.querySelectorAll('#menu li');
-            menuItems.forEach(item => {
-                item.classList.remove('active');
-            });
-
-            // 3. Mostrar a seção desejada
-            const targetSection = document.getElementById(pageId);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
-            }
-
-            // 4. Adicionar a classe 'active' no item do menu clicado
+        function navigate(pageId, element) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            document.querySelectorAll('#main-menu li').forEach(li => li.classList.remove('active'));
             element.classList.add('active');
         }
     </script>
