@@ -1,34 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <h1>C.A.V</h1>
-    <li>➡️<a href="trabalhe_conosco.html">Trabalhe Conosco</a></li>
-    <li>➡️<a href="sobre_nos.html">Sobre nós</a></li>
-    <li>➡️<a href="controle_financeiro.html">Controle Financeiro</a></li>
-    <img src="cav_home_page.jpg.jpeg"></img>
-    <style>
-        body{
-        background-color: black;
-        }
-        h1:hover{
-          color: rgb(76, 16, 133);
-        }
-        img:hover{
-            width: 10%;
-            height: auto;
-        }
-        a:hover{
-            color: chartreuse;
-            padding-top: 400px;
-            padding-left: 400px;
-            height: 400%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>CAV Studios</title>
 </head>
 <body>
-    
+
+<header>
+  <div class="logo">
+    <!-- Logo Pantera -->
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9a2 2 0 110-4 2 2 0 010 4z"/>
+    </svg>
+    <h2>CAV Studios</h2>
+  </div>
+
+  <nav>
+<li>➡️<a href="trabalhe_conosco.html">Trabalhe Conosco</a></li>
+    <li>➡️<a href="sobre_nos.html">Sobre nós</a></li>
+    <li>➡️<a href="controle_financeiro.html">Controle Financeiro</a></li>
+  </nav>
+</header>
+
+<div class="container">
+
+  <div id="home" class="tab active">
+    <h1>Bem-vindo à CAV Studios</h1>
+    <p>Produzimos experiências cinematográficas e eventos imersivos de alto nível.</p>
+  </div>
+
+  <div id="sobre" class="tab">
+    <h1>Sobre nós</h1>
+    <p>Especialistas em produções audiovisuais e eventos cinematográficos únicos.</p>
+  </div>
+
+  <div id="financeiro" class="tab">
+    <h1>Controle Financeiro</h1>
+    <p>Área dedicada à gestão financeira da empresa.</p>
+  </div>
+
+  <div id="trabalhe" class="tab">
+    <h1>Trabalhe conosco</h1>
+    <input type="text" placeholder="Seu nome">
+    <input type="email" placeholder="Seu email">
+    <textarea placeholder="Fale sobre você"></textarea>
+    <button class="submit">Enviar</button>
+  </div>
+
+  <div id="contato" class="tab">
+    <h1>Contato</h1>
+    <input type="text" placeholder="Nome">
+    <input type="email" placeholder="Email">
+    <textarea placeholder="Mensagem"></textarea>
+    <button class="submit">Enviar</button>
+  </div>
+
+  <div id="login" class="tab">
+    <h1>Login</h1>
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Senha">
+    <button class="submit">Entrar</button>
+  </div>
+
+</div>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #0d0d0d;
+  color: #eaeaea;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background-color: #111;
+  border-bottom: 1px solid #222;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo svg {
+  width: 40px;
+  height: 40px;
+  fill: #8a2be2;
+}
+
+nav button {
+  background: none;
+  border: none;
+  color: #ccc;
+  margin: 0 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+nav button:hover {
+  color: #8a2be2;
+}
+
+nav button.active {
+  color: #8a2be2;
+  border-bottom: 2px solid #8a2be2;
+}
+
+.container {
+  padding: 40px;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: white;
+}
+
+button.submit {
+  background-color: #8a2be2;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+}
+
+button.submit:hover {
+  background-color: #6a1bb0;
+}
+</style>
+
+<script src="script.js"></script>
 </body>
 </html>
