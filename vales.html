@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vales / Adiantamentos</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    color: #94a3b8;
+}
+
+tr {
+    border-bottom: 1px solid #334155;
+}
+
+.badge {
+    background: #2563eb;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+button {
+    background: #2563eb;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    width: 400px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: none;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top-bar">
+        <h1>Vales / Adiantamentos</h1>
+        <button onclick="abrirModal()">+ Emitir Vale</button>
+    </div>
+
+    <div class="card">
+        <table id="tabelaVales">
+            <thead>
+                <tr>
+                    <th>Funcionário</th>
+                    <th>Data</th>
+                    <th>Valor</th>
+                    <th>Motivo</th>
+                    <th>Situação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dados inseridos via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Saldo de Vales Pendentes por Funcionário</h3>
+        <p id="saldo">R$ 0,00</p>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModal()">X</span>
+        <h2>Emitir Vale</h2>
+
+        <select id="funcionario">
+            <option value="">Selecione...</option>
+            <option>Vania de Araujo</option>
+            <option>João Silva</option>
+        </select>
+
+        <input type="date" id="data">
+
+        <input type="number" id="valor" placeholder="Valor (R$)">
+
+        <input type="text" id="motivo" placeholder="Motivo (opcional)">
+
+        <button onclick="emitirVale()">Emitir Vale</button>
+    </div>
+</div>
+
+<script>
+let vales = [
+    {
+        funcionario: "Vania de Araujo",
+        data: "19/03/2026",
+        valor: 500,
+        motivo: "Adiantamento",
+        status: "Descontado"
+    }
+];
+
+function formatarValor(valor) {
+    return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function atualizarTabela() {
+    let tbody = document.querySelector("#tabelaVales tbody");
+    tbody.innerHTML = "";
+
+    vales.forEach(v => {
+        let tr = `
+            <tr>
+                <td>${v.funcionario}</td>
+                <td>${v.data}</td>
+                <td>${formatarValor(v.valor)}</td>
+                <td>${v.motivo || "-"}</td>
+                <td><span class="badge">${v.status}</span></td>
+            </tr>
+        `;
+        tbody.innerHTML += tr;
+    });
+
+    calcularSaldo();
+}
+
+function calcularSaldo() {
+    let total = vales
+        .filter(v => v.status !== "Descontado")
+        .reduce((soma, v) => soma + v.valor, 0);
+
+    document.getElementById("saldo").innerText = formatarValor(total);
+}
+
+function abrirModal() {
+    document.getElementById("modal").style.display = "flex";
+}
+
+function fecharModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+function emitirVale() {
+    let funcionario = document.getElementById("funcionario").value;
+    let data = document.getElementById("data").value;
+    let valor = document.getElementById("valor").value;
+    let motivo = document.getElementById("motivo").value;
+
+    if (!funcionario || !data || !valor) {
+        alert("Preencha os campos obrigatórios!");
+        return;
+    }
+
+    let dataFormatada = new Date(data).toLocaleDateString("pt-BR");
+
+    vales.push({
+        funcionario,
+        data: dataFormatada,
+        valor: parseFloat(valor),
+        motivo,
+        status: "Pendente"
+    });
+
+    fecharModal();
+    atualizarTabela();
+}
+
+// Inicialização
+atualizarTabela();
+</script>
+
+</body>
+</html>
