@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão - Relatórios</title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #0f172a url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1e293b;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.filter-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 25px;
+    gap: 20px;
+}
+
+.select-group {
+    flex-grow: 1;
+}
+
+label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #475569;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: white;
+    font-size: 1rem;
+    outline: none;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-gerar { background: #2563eb; color: white; }
+.btn-gerar:hover { background: #1d4ed8; }
+
+.btn-csv { background: #e2e8f0; color: #475569; }
+.btn-csv:hover { background: #cbd5e1; }
+
+.table-container {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th {
+    background: #f8fafc;
+    padding: 15px;
+    color: #64748b;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 15px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+}
+
+tr:hover {
+    background: #f1f5f9;
+}      
+    </style>
+</head>
+<body>
+    <div class="background-overlay"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <i class="fas fa-chart-line"></i>
+                <h1>Relatórios</h1>
+            </div>
+            <p class="subtitle">Sistema de Gestão Empresarial</p>
+        </header>
+
+        <main>
+            <div class="filter-section">
+                <div class="select-group">
+                    <label for="report-type">Tipo de Relatório</label>
+                    <select id="report-type" onchange="updateTable()">
+                        <option value="funcionarios">Funcionários Ativos</option>
+                        <option value="clientes">Clientes Ativos</option>
+                        <option value="recebiveis_pendentes">Recebíveis Pendentes</option>
+                        <option value="recebiveis_pagos">Recebíveis Pagos</option>
+                        <option value="vales">Vales Pendentes</option>
+                        <option value="historico">Histórico de Pagamentos</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button class="btn-gerar"><i class="fas fa-sync"></i> Gerar</button>
+                    <button class="btn-csv"><i class="fas fa-file-csv"></i> CSV</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr id="table-header">
+                            </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script 
+      const mockData = {
+    funcionarios: {
+        headers: ["Nome", "CPF", "Cargo", "Salário Bruto", "Vales Pendentes", "Telefone"],
+        rows: [
+            ["Vania de Araujo", "300.049.528-20", "N/A", "R$ 720,00", "R$ 0,00", "11970275207"]
+        ]
+    },
+    clientes: {
+        headers: ["Cliente", "CPF/CNPJ", "Status", "Cidade"],
+        rows: [
+            ["João Silva", "123.456.789-00", "Ativo", "São Paulo"],
+            ["Empresa XYZ", "12.345.678/0001-99", "Ativo", "Rio de Janeiro"]
+        ]
+    }
+    // Adicione outros tipos de relatório aqui se desejar
+};
+
+function updateTable() {
+    const type = document.getElementById('report-type').value;
+    const headerRow = document.getElementById('table-header');
+    const tableBody = document.getElementById('table-body');
+    
+    // Limpar tabela
+    headerRow.innerHTML = "";
+    tableBody.innerHTML = "";
+
+    const data = mockData[type] || { headers: ["Aviso"], rows: [["Dados não encontrados"]] };
+
+    // Criar cabeçalhos
+    data.headers.forEach(text => {
+        const th = document.createElement('th');
+        th.innerText = text;
+        headerRow.appendChild(th);
+    });
+
+    // Criar linhas
+    data.rows.forEach(rowData => {
+        const tr = document.createElement('tr');
+        rowData.forEach(cellData => {
+            const td = document.createElement('td');
+            td.innerText = cellData;
+            tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+    });
+}
+
+// Inicializar a tabela ao carregar a página
+window.onload = updateTable;
+      </script>
+</body>
+</html>
